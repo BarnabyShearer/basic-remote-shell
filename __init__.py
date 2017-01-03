@@ -43,10 +43,6 @@ PRIVATE_KEY = 'id_rsa'
 DEFAULT_WINDOW_SIZE = 64 * 2 ** 15
 DEFAULT_MAX_PACKET_SIZE = 2 ** 15
 
-def write_mpint(n):
-    """turns a long-int into a normalized byte string (adapted from Crypto.Util.number)"""
-    # after much testing, this algorithm was deemed to be the fastest
-
 def compute_key(id, nbytes, K, H, session_id):
     m = Message()
     m.add_mpint(K)
