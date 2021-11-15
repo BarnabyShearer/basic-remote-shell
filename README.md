@@ -6,5 +6,3 @@ Note: This dose **NOT** attempt to be a _conformant_ implementation. Its goal is
 
 Note: Whilst my aim is keep this secure; I don't know what I am doing and you **MUST** assume it isn't.
 
-
-
