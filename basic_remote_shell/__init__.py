@@ -143,9 +143,9 @@ class Message(BytesIO):
             else:
                 buf = b"\xFF"
         buf = buf[i[0] :]
-        if (n == 0) and (buf[0] >= 0x80):
+        if (n == 0) and (buf[0] >= 0x80):  # pragma: no cover
             buf = b"\x00" + buf
-        if (n == -1) and (buf[0] < 0x80):
+        if (n == -1) and (buf[0] < 0x80):  # pragma: no cover
             buf = b"\xFF" + buf
         self.add_binary(buf)
 
@@ -172,8 +172,6 @@ class Packetizer:
         self.__mac_engine_in: Optional[_Hash] = None
         self.__mac_key_out = bytes()
         self.__mac_key_in = bytes()
-        self.__compress_engine_out: Optional[Callable[[bytes], bytes]] = None
-        self.__compress_engine_in: Optional[Callable[[bytes], bytes]] = None
         self.__sequence_number_out = 0
         self.__sequence_number_in = 0
 
@@ -257,9 +255,6 @@ class Packetizer:
                 raise Exception("Mismatched MAC")
         padding = packet[0]
         payload = packet[1 : packet_size - padding]
-
-        if self.__compress_engine_in is not None:
-            payload = self.__compress_engine_in(payload)
 
         msg = Message(payload[1:])
         msg.seqno = self.__sequence_number_in
