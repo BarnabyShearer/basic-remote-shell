@@ -81,8 +81,8 @@ def test_packetizer_read() -> None:
     pack = basic_remote_shell.Packetizer(soc)
     with pytest.raises(Exception) as e:
         soc.recv.return_value = b"\x00\x00\x00\x01"
-        t, m = pack.read_message()
-        assert str(e) == "Invalid packet blocking"
+        pack.read_message()
+    assert e.value.args == ("Invalid packet blocking",)
     soc.recv.return_value = (
         b"\x00\x00\x00\x0c\x0b\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
     )
@@ -93,16 +93,19 @@ def test_packetizer_read() -> None:
     cypher.update.side_effect = lambda x: x
     pack.set_inbound_cipher(cypher, 16, sha256, 32, ("\x00" * 16).encode())
 
+    with pytest.raises(Exception) as e:
+        soc.recv.side_effect = [
+            b"\x00\x00\x00\x0c\x0b\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01",
+            b"\x00",
+        ]
+        pack.read_message()
+    assert e.value.args == ("Mismatched MAC",)
+
     soc.recv.side_effect = [
         b"\x00\x00\x00\x0c\x0b\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01",
         b"\xe3-=\xb3\x95\x1d\x13\xf3\xd2Q[\xc3Fe9\x1c\x12\xac}\x9f\xc7!*\x14\x81"
         b"\xdaN\xcf*|?\x9a",
     ]
     t, m = pack.read_message()
-    with pytest.raises(Exception) as e:
-        soc.recv.side_effect = [
-            b"\x00\x00\x00\x0c\x0b\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01",
-            b"\x00",
-        ]
-        t, m = pack.read_message()
-        assert str(e) == "Mismatched MAC"
+    assert t == b""
+    assert m.get_remainder() == b""
