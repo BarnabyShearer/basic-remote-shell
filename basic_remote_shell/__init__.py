@@ -396,14 +396,13 @@ def connect(  # noqa: C901
     ptype, m = packetizer.read_message()
     if ptype != MSG_NEWKEYS:
         raise Exception("No MSG_NEWKEYS", ptype)
-    encryptor = Cipher(
-        algorithms.AES(
-            compute_key(b"C", 16, transport_k, transport_h, transport_session_id)
-        ),
-        modes.CTR(
-            compute_key(b"A", 16, transport_k, transport_h, transport_session_id)
-        ),
-    ).encryptor()  # type: ignore
+    aes = algorithms.AES(
+        compute_key(b"C", 16, transport_k, transport_h, transport_session_id)
+    )
+    ctr = modes.CTR(
+        compute_key(b"A", 16, transport_k, transport_h, transport_session_id)
+    )
+    encryptor = Cipher(aes, ctr).encryptor()  # type: ignore
     packetizer.set_outbound_cipher(
         encryptor,
         16,
@@ -414,14 +413,13 @@ def connect(  # noqa: C901
         ),
         True,
     )
-    decryptor = Cipher(
-        algorithms.AES(
-            compute_key(b"D", 16, transport_k, transport_h, transport_session_id)
-        ),
-        modes.CTR(
-            compute_key(b"B", 16, transport_k, transport_h, transport_session_id)
-        ),
-    ).decryptor()  # type: ignore
+    aes = algorithms.AES(
+        compute_key(b"D", 16, transport_k, transport_h, transport_session_id)
+    )
+    crt = modes.CTR(
+        compute_key(b"B", 16, transport_k, transport_h, transport_session_id)
+    )
+    decryptor = Cipher(aes, crt).decryptor()  # type: ignore
     packetizer.set_inbound_cipher(
         decryptor,
         16,
