@@ -45,8 +45,8 @@ MSG_CHANNEL_EOF = b"\x60"
 MSG_CHANNEL_REQUEST = b"\x62"
 MSG_CHANNEL_SUCCESS = b"\x63"
 
-DEFAULT_WINDOW_SIZE = 64 * 2 ** 15
-DEFAULT_MAX_PACKET_SIZE = 2 ** 15
+DEFAULT_WINDOW_SIZE = 64 * 2**15
+DEFAULT_MAX_PACKET_SIZE = 2**15
 
 
 def compute_key(id: bytes, nbytes: int, k: int, h: bytes, session_id: bytes) -> bytes:
